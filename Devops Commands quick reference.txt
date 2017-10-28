@@ -1,0 +1,465 @@
+﻿Git COMMANDS
+------------------------------------------------------------------------------------------------------------------------
+git config --global user.name "username"
+git config --global user.email "email@example.com"
+git clone
+git --help
+git --version
+git add filename
+git add .
+git commit -m "any message"
+git push
+git pull
+git log
+git status
+git init
+git remote add anyname url_of_empty_repository
+git push anyname master
+git branch branchname
+git checkout branchname
+git merge branchname1 branchname2
+git rebase branchname1 branchname2
+git branch -d branchname1 //delete the merged branch
+git diff
+git revert
+git reset
+------------------------------------------------------------------------------------------------------------------------
+ANT COMMANDS
+
+ant clean
+ant
+ant compile
+------------------------------------------------------------------------------------------------------------------------
+MAVEN COMMANDS
+
+mvn clean
+mvn compile
+mvn verify
+mvn install
+mvn clean install
+mvn test
+------------------------------------------------------------------------------------------------------------------------
+GRADLE COMMANDS
+
+gradle clean
+gradle assemble
+gradle build
+------------------------------------------------------------------------------------------------------------------------
+VAGRANTUP COMMANDS
+
+vagrant box
+vagrant init
+vagrant init ubuntu/trusty64
+vagrant up
+vagrant halt
+vagrant ssh
+vagrant destroy
+vagrant resume
+vagrant suspend
+------------------------------------------------------------------------------------------------------------------------
+LINUX BASIC COMMANDS
+
+pwd
+ls
+ls -la
+echo "content of file > name.txt
+echo "additional content" >>name.txt
+touch name1.txt
+chmod 755 name1.txt
+vi name1.txt
+------------------------------------------------------------------------------------------------------------------------
+VI Editor commands 
+
+i - insert mode
+ESC + :wq - to write and quit
+Esc + :Q! - quit without save
+Esc + :Q - quit the editor 
+------------------------------------------------------------------------------------------------------------------------
+PUPPET COMMANDS
+------------------------------------------------------------------------------------------------------------------------
+	//vagrant file
+    
+	Vagrant.configure("2") do |config|
+    config.vm.define "puppet" do |puppet|
+    puppet.vm.box = "ubuntu/xenial64"
+    puppet.vm.network "private_network", ip: "192.168.0.175"
+    puppet.vm.hostname = "puppet"
+	puppet.vm.provider "virtualbox" do |v|
+    v.memory = 4096
+    end
+	end
+    config.vm.define "node1" do |node1|
+    node1.vm.box = "ubuntu/xenial64"
+    node1.vm.network "private_network", ip: "192.168.0.176"
+    node1.vm.hostname = "node1"
+	end
+	end
+------------------------------------------------------------------------------------------------------------------------
+	//puppet server
+
+	$sudo vi /etc/hosts
+	192.168.0.176  node1
+	sudo  curl -O https://apt.puppetlabs.com/puppetlabs-release-pc1-xenial.deb
+	sudo dpkg -i puppetlabs-release-pc1-xenial.deb
+	sudo apt-get update –y
+	sudo apt-get install puppetserver
+	sudo ufw allow 8140
+	sudo vi /etc/default/puppetserver
+	sudo systemctl start puppetserver
+	sudo systemctl status puppetserver
+	------------------------------------------------------------------------------------------------------------------------
+	//node
+	
+	sudo vi /etc/hosts
+	192.168.0.175 puppet
+	sudo wget https://apt.puppetlabs.com/puppetlabs-release-pc1-xenial.deb
+	sudo dpkg -i puppetlabs-release-pc1-xenial.deb
+	sudo apt-get update
+	sudo apt-get install puppet-agent
+	sudo systemctl start puppet
+	sudo systemctl enable puppet
+	------------------------------------------------------------------------------------------------------------------------
+	// puppet server
+	
+	sudo /opt/puppetlabs/bin/puppet cert list
+	sudo /opt/puppetlabs/bin/puppet cert list --all //to view all certificate list
+	sudo /opt/puppetlabs/bin/puppet cert sign node1.domain.name 
+	or
+	sudo /opt/puppetlabs/bin/puppet cert sign –all
+	sudo vi /etc/puppetlabs/code/environments/production/manifests/site.pp
+------------------------------------------------------------------------------------------------------------------------
+	//paste below commands in site.pp file
+	
+	file {'/tmp/tempfile':                              # resource type file and filename
+	ensure  => present,                                 # make sure it exists
+	mode    => '0644',                                  # file permissions
+	content => "This is temporary file", 
+	}
+
+	or
+
+ 
+	package {'screen':
+	ensure => present,
+	}
+	package {'git':
+	ensure => present,
+	}
+	package {'wget':
+	ensure => present,
+	}
+	package {'python':
+	ensure => present,
+	}
+	package {'apache2':
+	ensure => present,
+	}
+	package {'ant':
+	ensure => present,
+	}
+
+	//node
+	sudo /opt/puppetlabs/bin/puppet agent --test
+
+	//to verify all the software installed on node use below command
+	apt list --installed
+
+------------------------------------------------------------------------------------------------------------------------	
+CHEF COMMANDS
+
+	First Step
+	
+	Install Vagrant and virtual box
+	Create vagrant file 
+------------------------------------------------------------------------------------------------------------------------
+	Second step
+	
+	vagrant init ubuntu/trusty64 
+	Replace with below commands in vagrant file
+
+	Vagrant.configure("2") do |config|
+	config.vm.define "developmentkit" do |developmentkit|
+	developmentkit.vm.box = "ubuntu/trusty64"
+   	developmentkit.vm.network "private_network", ip: "192.168.0.252"
+        developmentkit.vm.hostname = "developmentkit.example.com"
+	end
+        config.vm.define "chefserver" do |chefserver|
+    	chefserver.vm.box = "ubuntu/trusty64"
+    	chefserver.vm.network "private_network", ip: "192.168.0.253"
+    	chefserver.vm.hostname = "chefserver.example.com"
+    	chefserver.vm.provider "virtualbox" do |v|
+    	v.memory = 4096
+    	v.cpus = 2
+    	end
+	end
+	config.vm.define "node" do |node|
+    	node.vm.box = "ubuntu/trusty64"
+    	node.vm.network "private_network", ip: "192.168.0.3"
+    	node.vm.hostname = "node.example.com"
+	end
+	end
+
+	//up the machine using below commands
+	vagrant up 
+------------------------------------------------------------------------------------------------------------------------
+	Third Step
+	paste the chef developmentkit and chef server of ubuntu in vagrant folder
+------------------------------------------------------------------------------------------------------------------------
+	Fourth Step 
+
+	vagrant ssh developmentkit
+	ls  /vagrant
+	sudo dpkg -i /vagrant/chefdk_0.9.0-1_amd64.deb
+	mkdir .chef
+	vi .chef/knife.rb
+   	cookbook_path ['/home/vagrant/cookbooks']  //In knife.rb
+	mkdir cookbooks
+	cd cookbooks
+	chef generate cookbook my_cookbook 
+	ls my_cookbook/  
+	cd my_cookbook/recipes
+	vi default.rb
+
+	// In default.rb paste the below commands
+	file '/tmp/hello.txt' do
+	content 'hello world'
+	end	
+
+	sudo chef-client -z --runlist 'recipe[my_cookbook]'  //to verify my_cookbook is working or not
+	exit
+------------------------------------------------------------------------------------------------------------------------
+
+	Fifth step 
+
+	// go to root user of developmentkit
+	sudo -s
+	ls /etc
+	vi hosts
+
+	//add these three lines in hosts file
+	192.168.0.253 chefserver.example.com chefserver
+	192.168.0.252 developmentkit.example.com developmentkit
+	192.168.0.3 node.example.com node
+	
+	//save it by using escape :wq
+	exit
+------------------------------------------------------------------------------------------------------------------------
+	Sixth Step
+	//In chefserver machine
+	vagrant ssh chefserver
+	sudo -s
+	ls /etc
+	vi hosts
+
+	//add these three lines in hosts file
+
+	192.168.0.253 chefserver.example.com chefserver
+	192.168.0.252 developmentkit.example.com developmentkit
+	192.168.0.3 node.example.com node
+	//save it by using escape :wq
+	ping node // to verify node is connected to server - stop using ctrl+c
+	exit
+------------------------------------------------------------------------------------------------------------------------
+
+	Seventh Step 	//In node machine
+	vagrant ssh node
+	sudo -s
+	ls /etc
+	vi hosts
+
+	//add these three lines in hosts file
+	192.168.0.253 chefserver.example.com chefserver
+	192.168.0.252 developmentkit.example.com developmentkit
+	192.168.0.3 node.example.com node
+
+	//save it by using escape :wq
+	exit
+------------------------------------------------------------------------------------------------------------------------
+	Eighth Step 	//In chefserver machine
+
+	vagrant ssh chefserver
+	sudo -s
+	ls /vagrant/
+	dpkg -i /vagrant/chef-server-core_XXXXXXXX.deb //install chef server software in chef server
+	chef-server-ctl reconfigure
+	chef-server-ctl user-create admin admin admin admin@example.com LearnDevops -f admin.pem
+	chef-server-ctl org-create learndevops "Learn Devops Course" --association_user admin -f org.pem //optional
+
+	cp admin.pem org.pem /vagrant  
+	or 
+	cp admin.pem /vagrant 	
+	exit
+------------------------------------------------------------------------------------------------------------------------
+	Ninth Step // In Developmentkit machine
+
+	vagrant ssh developmentkit
+	cp /vagrant/*.pem .
+	ls
+	vi .chef/knife.rb
+
+	//Add below commands in knife.rb
+
+	current_dir = File.dirname(__FILE__)
+	log_level                :info
+	log_location             STDOUT
+	node_name                "admin"
+	client_key               "/home/vagrant/admin.pem"
+	chef_server_url          "https://chefserver.example.com/organizations/learndevops"
+	cookbook_path            ["/home/vagrant/cookbooks"]
+
+	cat .chef/knife.rb // to display all above commands - to verify
+	knife ssl fetch
+	knife client list // it will shows learndevops-validator
+	knife bootstrap node.example.com -N node -s -x vagrant --sudo  // it will ask vagrant password - enter "vagrant"
+	knife client list  //it will show node also
+
+	cd cookbooks/
+	ls
+	knife cookbook upload my_cookbook  //uploading my_cookbook to chefserver
+	knife node run_list set node 'recipe[my_cookbook]' //it will show node run list and same uploaded to node run list
+	ssh node 'sudo chef-client' //give yes and enter vagrant node password in vagrant node - "vagrant"
+------------------------------------------------------------------------------------------------------------------------
+	Tenth Step
+	Verify Now hello.txt is copied in node /tmp folder
+------------------------------------------------------------------------------------------------------------------------
+ANSIBLE COMMANDS
+
+	Installation
+----------------------------------------------------------------------------------------------------------------------------
+	Vagrant File -Installation
+----------------------------------------------------------------------------------------------------------------------------
+	Vagrant.configure("2") do |config|
+	config.vm.define "webserver" do |webserver|
+	webserver.vm.box = "ubuntu/trusty64"
+    	webserver.vm.network "private_network", ip: "192.168.0.91"
+    	webserver.vm.hostname = "webserver"
+	end
+	config.vm.define "ansible" do |ansible|
+	ansible.vm.box = "ubuntu/trusty64"
+    	ansible.vm.network "private_network", ip: "192.168.0.92"
+    	ansible.vm.hostname = "ansible"
+	end
+	end
+-----------------------------------------------------------------------------------------------------------------------
+
+	Ansibe Installation for ubuntu
+
+	sudo apt-get update
+	sudo apt-get install software-properties-common
+	sudo apt-add-repository ppa:ansible/ansible
+	sudo apt-get update
+	sudo apt-get install ansible
+------------------------------------------------------------------------------------------------------------------------
+	In ansible machine
+
+	ssh-keygen
+	cat .ssh/id_rsa.pub
+
+	In webserver machine
+
+	echo 'ssh-rsa paste_the_key' > /root/.ssh/authorized_keys
+	//if denied to enter key -> sudo -s
+	// go back to ansible machine
+
+	vi hosts => add ip address => 192.168.0.2
+
+	ssh-agent bash
+	ssh-add .ssh/id_rsa // add the private key
+
+	ansible -i hosts -u root -m ping all
+
+-----------------------------------------------------------------------------------------------------------------------
+	Move to ansible folder
+
+	ls -lha /etc/ansible
+	cp -R /etc/ansible myplatform
+
+	cd myplatform 
+	ls -lha
+
+------------------------------------------------------------------------------------------------------------------
+
+
+	Creating configuration 
+
+	vi ansible.cfg
+	inventory = hosts
+
+	vi hosts
+	ipaddress of all hosts
+  
+	ansible -u root -m ping all
+	ansible -u root -m shell -a 'hostname' all
+	ansible -u root -m shell -a 'df-h' all
+	ansible -u root -m shell -a 'whoami' all
+
+  
+ --------------------------------------------------------------------------------------
+	Creating Main.YML file
+
+	mkdir roles
+	mkdir roles/basic
+	mkdir roles/basic/tasks
+	cd roles/basic/tasks
+	vi main.yml
+
+	In Main.Yml file =>  
+
+	- name: "Installing Vim"
+	apt: pkg=vim state=installed
+
+------------------------------------------------------------------------------------------------------------------------
+	// Go to myplatform directory or home directory
+	Create a playbook.yml
+	// it need to be created in myplatform directory
+
+	vi playbook.yml
+	IN playbook.yml file =>
+	
+	---
+	- hosts: all
+	become: true
+	roles: 
+		- basic
+  
+  
+	// Run playbook.yml using following command
+  
+	ansible-playbook -u root -s playbook.yml
+  
+	//if you need to run along with sudo password
+  
+	ansible-playbook -u root -s playbook.yml
+
+------------------------------------------------------------------------------------------------------------------------
+
+	Multipe installaiton configuration
+
+	vi roles/basic/tasks/main.yml
+
+	- name: "Installing Vim"
+	  apt: pkg=vim state=installed
+
+	- name: "Installing DNS Utils"
+	  apt: pkg=dnsutils state=installed
+
+	- name: "Installing Vim"
+	  apt: pkg=git state=installed
+
+    	 Run => ansible playbook -K playbook.yml
+  
+  	  (or)
+
+	- name: "Installing additional software"
+    	  apt: pkg={{item}} state=installed
+          with_items:
+		- dnsutils
+		- git
+		- vim
+		- ntp
+		- at
+		- lvm2
+
+
+------------------------------------------------------------------------------------------------------------------------
+	
