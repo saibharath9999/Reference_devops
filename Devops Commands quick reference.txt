@@ -225,6 +225,17 @@ CHEF COMMANDS
 	content 'hello world'
 	end	
 
+	or
+	
+	package 'nginx' do
+  	action :install
+	end
+
+	service 'nginx' do
+ 	action [ :enable, :start ]
+	end
+	
+		
 	sudo chef-client -z --runlist 'recipe[my_cookbook]'  //to verify my_cookbook is working or not
 	exit
 ------------------------------------------------------------------------------------------------------------------------
