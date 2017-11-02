@@ -24,13 +24,13 @@ git diff
 git revert
 git reset
 ------------------------------------------------------------------------------------------------------------------------
-ANT COMMANDS
+ANT COMMANDS-----build.xml
 
 ant clean
 ant
 ant compile
 ------------------------------------------------------------------------------------------------------------------------
-MAVEN COMMANDS
+MAVEN COMMANDS-----pom.xml
 
 mvn clean
 mvn compile
@@ -39,7 +39,7 @@ mvn install
 mvn clean install
 mvn test
 ------------------------------------------------------------------------------------------------------------------------
-GRADLE COMMANDS
+GRADLE COMMANDS----build.gradle
 
 gradle clean
 gradle assemble
